@@ -1,7 +1,7 @@
 export default function Home(){
     return(
-        <p className="text-red-500">
-            ola mundo
-        </p>
+        <main className="bg-fundo w-screen h-screen">
+            <p className="text-texto">ola mundo</p>
+        </main>
     )
 }

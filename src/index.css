@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+@theme{
+    --color-fundo:#0B0015;
+    --color-destaque: #BD00C0;
+    --color-conteiner: #240D39;
+    --color-texto: #FFFFFF;
+    --color-proteina: #C00003;
+    --color-carboidrato: #10C200;
+    --color-gordura: #E24F00;
+}
+
+*{
+    margin:0;
+    padding: 0;
+    border:0;
+}
+
