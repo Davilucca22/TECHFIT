@@ -1,9 +1,12 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 
 @theme{
     --color-fundo:#0B0015;
     --color-destaque: #BD00C0;
-    --color-conteiner: #240D39;
+    --color-conteiner1: #17002D;
+    --color-conteiner2: #240D39;
     --color-texto: #FFFFFF;
     --color-proteina: #C00003;
     --color-carboidrato: #10C200;
@@ -11,8 +14,6 @@
 }
 
 *{
-    margin:0;
-    padding: 0;
-    border:0;
+    font-family: "Inter",sans-serif;
+    outline: none;
 }
-
