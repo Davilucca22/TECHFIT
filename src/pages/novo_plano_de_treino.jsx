@@ -5,8 +5,8 @@ export default function NovoPlano(){
 
     const navigate = useNavigate()
 
-    const conteiner = "rounded-2xl bg-destaque/20 py-2 px-4 md:w-50 h-20 flex flex-col justify-center items-center"
-    const li = "flex flex-col gap-2 text-center"
+    const conteiner = "rounded-2xl bg-destaque/20 py-2 px-4 sm:w-50 h-20 flex flex-col justify-center items-center"
+    const li = "flex flex-wrap justify-center gap-2 text-center"
     const texto_pq = "text-sm text-texto/60"
 
     return(
@@ -20,24 +20,24 @@ export default function NovoPlano(){
             </header>
             <aside className="w-11/12 m-auto">
                 <span className="font-light text-sm text-texto/80">Objetivo</span>
-                <ul className="text-texto flex flex-row gap-3 bg-conteiner1 shadow-destaque/30 border border-destaque/20 shadow-lg p-4 items-center justify-center rounded-2xl">
+                <ul className="text-texto flex flex-wrap gap-3 bg-conteiner1 shadow-destaque/30 border border-destaque/20 shadow-lg p-4 items-center justify-center rounded-2xl">
                    <li className={li}>
                         <div className={conteiner}>
-                            <p>Ganhar Massa</p>
+                            <p className="md:text-lg font-semibold">Ganhar Massa</p>
                             <span className={texto_pq}>Hipertrofia</span>
                         </div>
                         <div className={conteiner}>
-                            <p>Ficar mais forte</p>
+                            <p className="md:text-lg font-semibold">Ficar mais forte</p>
                             <span className={texto_pq}>Força</span>
                         </div>
                    </li>
                    <li className={li}>
                         <div className={conteiner}>
-                            <p>Mais disposição</p>
+                            <p className="md:text-lg font-semibold">Mais disposição</p>
                             <span className={texto_pq}>Resistencia</span>
                         </div>
                         <div className={conteiner}>
-                            <p>Perder Peso</p>
+                            <p className="md:text-lg font-semibold">Perder Peso</p>
                             <span className={texto_pq}>Emagrecimento</span>
                         </div>
                    </li>
@@ -69,7 +69,7 @@ export default function NovoPlano(){
                     <li className="bg-destaque/50 border border-destaque p-3 rounded-lg text-texto/80">Dom</li>
                 </ul>
             </aside>
-            <button className="p-3 rounded-lg bg-destaque text-texto/90 font-bold w-11/12 m-auto" type="button">Gerar Plano de Treino</button>
+            <button className="p-3 rounded-lg bg-destaque text-texto/90 font-bold w-11/12 m-auto my-2" type="button">Gerar Plano de Treino</button>
         </main>
     )
 }
