@@ -5,7 +5,7 @@ export default function NovoPlano(){
 
     const navigate = useNavigate()
 
-    const conteiner = "rounded-2xl bg-destaque/20 py-2 px-4 w-50 h-20 flex flex-col justify-center items-center"
+    const conteiner = "rounded-2xl bg-destaque/20 py-2 px-4 md:w-50 h-20 flex flex-col justify-center items-center"
     const li = "flex flex-col gap-2 text-center"
     const texto_pq = "text-sm text-texto/60"
 
@@ -59,7 +59,7 @@ export default function NovoPlano(){
             </ul>
             <aside className="w-11/12 m-auto">
                 <span className={texto_pq}>Quais dias irá treinar</span>
-                <ul className="flex justify-between mt-2">
+                <ul className="flex flex-wrap gap-3 mt-2">
                     <li className="bg-destaque/50 border border-destaque p-3 rounded-lg text-texto/80">Seg</li>
                     <li className="bg-destaque/50 border border-destaque p-3 rounded-lg text-texto/80">Ter</li>
                     <li className="bg-destaque/50 border border-destaque p-3 rounded-lg text-texto/80">Qua</li>
