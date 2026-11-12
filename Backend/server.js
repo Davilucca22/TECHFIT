@@ -102,10 +102,11 @@ Dados do usuário:
 - Idade: ${Number(profile.idade)} anos
 - Sexo informado: ${profile.sexo}
 - Dias disponíveis para treinar: ${profile.dias_treino.join(", ")}
+- Nivel: ${profile.nivel}
 
 Regras:
 - Divida os exercícios em um treino para cada dia disponível, usando o nome do dia exatamente como foi enviado.
-- Escolha no máximo 4 exercícios por dia, adequados ao objetivo e sem redundância; prefira uma proposta conservadora para iniciantes.
+- Escolha no máximo 8 exercícios por dia, adequados ao objetivo e sem redundância.
 - Para cada exercício, retorne nome_pt em português do Brasil para exibição e nome_es em espanhol, usando exatamente o nome espanhol de um exercício do catálogo ExerciseGymGifsDB para permitir a busca posterior.
 - Use séries como número inteiro e repetições como texto, por exemplo "8-12" ou "30 segundos".
 - Inclua observacao somente quando necessária para execução, adaptação ou segurança. Se não houver observação, use uma string vazia.
