@@ -30,6 +30,7 @@ export default function NovoPlano(){
     const semana = ["Seg","Ter","Qua","Qui","Sex","Sab","Dom"]
 
     const reset = {
+        nivel: null,
         objetivo:null,
         peso:null,
         altura:null,
@@ -47,6 +48,8 @@ export default function NovoPlano(){
         setmostraMSG(false)
     }
 
+    console.log(dadosUser)
+
 
     return(
         <main className="bg-fundo min-h-screen flex flex-col">
@@ -57,9 +60,9 @@ export default function NovoPlano(){
                     <span className="font-light text-sm text-texto/80">constancia vence intensidade</span>
                 </p>
             </header>
-            <aside className="w-11/12 m-auto">
+            <aside className="w-11/12 m-auto mt-2">
                 <span className="font-light text-sm text-texto/80">Objetivo</span>
-                <ul className="text-texto flex flex-wrap gap-3 bg-conteiner1 shadow-destaque/30 border border-destaque/20 shadow-lg p-4 items-center justify-center rounded-2xl">
+                <ul className="text-texto flex flex-wrap mb-5 gap-3 bg-conteiner1 shadow-destaque/30 border border-destaque/20 shadow-lg p-4 items-center justify-center rounded-2xl">
                     {objetivos.map(item => (
                         <li onClick={() => {
                             setDadosUser({...dadosUser, objetivo: item.titulo})
@@ -69,6 +72,12 @@ export default function NovoPlano(){
                         </li>
                     ))}
                 </ul>
+                <span className="font-light text-sm text-texto/80">Nivel</span>
+                <select onChange={e => setDadosUser({...dadosUser, nivel: e.target.value})} className="text-texto w-full bg-conteiner1 mb-5 p-3 border border-destaque/20 shadow-lg shadow-destaque/20 rounded-lg">
+                    <option>Iniciante (estou começando a treinar agora)</option>
+                    <option>Intermediario (treino a pelo menos 1 ano)</option>
+                    <option>Avançado (treino a mais de 1 ano)</option>
+                </select>
             </aside>
             <form className="flex flex-col items-center">
                 <ul className="w-11/12 items-center flex flex-col m-auto">
