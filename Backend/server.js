@@ -4,7 +4,7 @@ configDotenv()
 import { createServer } from "node:http";
 
 const PORT = Number(process.env.PORT) || 3001;
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 const MAX_BODY_SIZE = 16 * 1024;
 const ALLOWED_ORIGINS = new Set([
   "http://localhost:5173",
