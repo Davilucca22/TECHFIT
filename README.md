@@ -1,5 +1,18 @@
 # React + Vite
 
+## Backend do Gemini
+
+O backend lê `GEMINI_API_KEY` de `Backend/.env`. A chave fica somente no servidor e não deve ser adicionada ao Git. Para configurar uma cópia nova, use `Backend/.env.example` como referência e preencha a chave do Google AI Studio.
+
+Inicie o backend e o frontend em terminais separados, na raiz do projeto:
+
+```sh
+npm run dev:backend
+npm run dev
+```
+
+O formulário envia objetivo, peso, altura, idade, sexo e dias de treino ao endpoint `POST /api/gerar-treino`. O backend chama o Gemini e devolve uma lista de exercícios em JSON com nome, séries, repetições e observação opcional.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
