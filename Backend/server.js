@@ -93,24 +93,12 @@ function validateProfile(profile) {
 }
 
 function buildPrompt(profile) {
-  return `Monte um plano semanal de musculação seguro e realista usando os dados abaixo. Responda em português do Brasil.
+  return `Gere um plano semanal de musculação seguro e realista em português do Brasil. Priorize preencher corretamente os dados do treino; não inclua explicações.
 
-Dados do usuário:
-- Objetivo: ${profile.objetivo}
-- Peso: ${Number(profile.peso)} kg
-- Altura: ${Number(profile.altura)} cm
-- Idade: ${Number(profile.idade)} anos
-- Sexo informado: ${profile.sexo}
-- Dias disponíveis para treinar: ${profile.dias_treino.join(", ")}
-- Nivel: ${profile.nivel}
+Perfil: objetivo ${profile.objetivo}; peso ${Number(profile.peso)} kg; altura ${Number(profile.altura)} cm; idade ${Number(profile.idade)} anos; sexo ${profile.sexo}; nível ${profile.nivel}.
+Dias de treino: ${profile.dias_treino.join(", ")}.
 
-Regras:
-- Divida os exercícios em um treino para cada dia disponível, usando o nome do dia exatamente como foi enviado.
-- Escolha no máximo 8 exercícios por dia, adequados ao objetivo e sem redundância.
-- Para cada exercício, retorne nome_pt em português do Brasil para exibição e nome_es em espanhol, usando exatamente o nome espanhol de um exercício do catálogo ExerciseGymGifsDB para permitir a busca posterior.
-- Use séries como número inteiro e repetições como texto, por exemplo "8-12" ou "30 segundos".
-- Inclua observacao somente quando necessária para execução, adaptação ou segurança. Se não houver observação, use uma string vazia.
-- Retorne somente JSON no formato {"treinos":[{"dia":"Seg","exercicios":[{"nome_pt":"...","nome_es":"...","series":3,"repeticoes":"8-12","observacao":""}]}]}. Não inclua introdução, explicações ou propriedades adicionais.`;
+Inclua um treino para cada dia informado, usando o nome do dia exatamente como recebido. Escolha de 6 a 7 exercícios adequados ao objetivo e sem redundância. Para cada exercício, informe nome_pt em português do Brasil, nome_es usando o nome espanhol do catálogo ExerciseGymGifsDB, series como inteiro, repeticoes como texto curto (ex.: "8-12") e observacao curta apenas quando necessária; caso contrário, use texto vazio.`;
 }
 
 async function generateWorkout(profile) {
@@ -133,9 +121,9 @@ async function generateWorkout(profile) {
         generationConfig: {
           responseMimeType: "application/json",
           responseSchema,
-          thinkingConfig: { thinkingBudget: 0 },
+          thinkingConfig: { thinkingLevel: "LOW" },
           temperature: 0.4,
-          maxOutputTokens: 4096,
+          maxOutputTokens: 3072,
         },
       }),
       signal: AbortSignal.timeout(120_000),
@@ -150,7 +138,7 @@ async function generateWorkout(profile) {
     }
     throw error;
   }
-  console.info(`Gemini respondeu em ${Date.now() - startedAt}ms; status=${apiResponse.status}; modelo=${MODEL}.`);
+  console.info(`Gemini recebeu cabeçalhos em ${Date.now() - startedAt}ms; status=${apiResponse.status}; modelo=${MODEL}.`);
 
   if (!apiResponse.ok) {
     const details = await apiResponse.json().catch(() => ({}));
@@ -164,8 +152,20 @@ async function generateWorkout(profile) {
   }
 
   const result = await apiResponse.json();
-  const text = result.candidates?.[0]?.content?.parts?.map((part) => part.text ?? "").join("");
+  const candidate = result.candidates?.[0];
+  if (candidate?.finishReason && candidate.finishReason !== "STOP") {
+    console.error(`Gemini encerrou a geração; motivo=${candidate.finishReason}; modelo=${MODEL}.`);
+    throw Object.assign(
+      new Error(candidate.finishReason === "MAX_TOKENS"
+        ? "O Gemini atingiu o limite de saída antes de concluir o plano. Tente reduzir os dias de treino."
+        : "O Gemini não conseguiu concluir o plano. Revise os dados e tente novamente."),
+      { status: 502 },
+    );
+  }
+
+  const text = candidate?.content?.parts?.map((part) => part.text ?? "").join("");
   if (!text) throw Object.assign(new Error("O Gemini retornou uma resposta vazia."), { status: 502 });
+  console.info(`Gemini concluiu a resposta em ${Date.now() - startedAt}ms; modelo=${MODEL}.`);
 
   let workout;
   try {
