@@ -33,11 +33,8 @@ export default function NovoPlano(){
     const semana = ["Seg","Ter","Qua","Qui","Sex","Sab","Dom"]
 
     const reset = {
-<<<<<<< HEAD:src/pages/novo_plano_de_treino.jsx
         sexo:null,
-=======
         nivel: null,
->>>>>>> 9c4bda2fd3bb5aa97bfb9b833fa29e3056eb2d5c:Frontend/src/pages/novo_plano_de_treino.jsx
         objetivo:null,
         peso:"",
         altura:"",
@@ -112,12 +109,8 @@ export default function NovoPlano(){
         }
     }
 
-<<<<<<< HEAD:src/pages/novo_plano_de_treino.jsx
-=======
     console.log(dadosUser)
 
-
->>>>>>> 9c4bda2fd3bb5aa97bfb9b833fa29e3056eb2d5c:Frontend/src/pages/novo_plano_de_treino.jsx
     return(
         <main className="bg-fundo min-h-screen flex flex-col">
             <header>

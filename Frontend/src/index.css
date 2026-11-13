@@ -17,3 +17,22 @@
     font-family: "Inter",sans-serif;
     outline: none;
 }
+
+
+.wave {
+  position: absolute;
+  top: -13px;
+  left: -50%;
+  width: 200%;
+  height: 26px;
+  border-radius: 40%;
+  background: rgba(125, 211, 252, 0.7);
+  animation: water-wave 4s linear infinite;
+}
+
+.wave-two {
+  opacity: 0.4;
+  animation-duration: 6s;
+  animation-direction: reverse;
+}
+

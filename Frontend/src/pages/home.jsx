@@ -1,18 +1,16 @@
-import { GiHamburgerMenu } from "react-icons/gi";
 import { GrAdd } from "react-icons/gr";
 
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../components/sidebar.jsx";
 
 export default function Home(){
 
     const navigate = useNavigate()
 
     return(
+        <>
         <main className="bg-fundo h-screen">
             <header className="flex flex-col">
-                <button type="button" className="w-12 h-10">
-                    <GiHamburgerMenu className="w-full h-full text-destaque"/>
-                </button>
                 <aside className="flex flex-row items-center justify-between">
                     <h1 className="text-texto ml-2 my-5 text-2xl font-extrabold">Treinos</h1>
                     <span className="text-destaque border bg-conteiner1 py-1 px-2 text-sm w-max rounded-2xl mr-2">Semana</span>
@@ -30,5 +28,7 @@ export default function Home(){
                 </p>
             </div>
         </main>
+        <Sidebar/>
+        </>
     )
 }
