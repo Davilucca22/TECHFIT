@@ -1,7 +1,8 @@
 import { MdDelete,MdWaterDrop  } from "react-icons/md";
 import Sidebar from "../components/sidebar"
 import WaterGlass from "../components/CopoDeAgua"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import useCache from "../hooks/useCache";
 
 export default function Ingestao_de_Agua(){
 
@@ -10,8 +11,52 @@ export default function Ingestao_de_Agua(){
 
     const [adicionar,setadicionar] = useState(200)
     const [registroAgua,setregistroAgua] = useState([])
+    const hoje = new Date().toLocaleDateString('pt-br')
+
+    const {criar,modificar,buscar,excluir} = useCache()  
+    
+    useEffect(() => {
+
+        const dadosAtuais = buscar("techfit.agua")
+
+
+        if(dadosAtuais !== null){
+
+            setregistroAgua(dadosAtuais.filter(item => item.data === hoje))
+
+            const ingerido = dadosAtuais.reduce((soma,item) => soma + item.quantidade,0)
+
+            setaguaingerida(ingerido)
+
+        }
+
+    },[])
+
+
+    function RegistraEmCache(novosDados){
+        const dadosExistentes = buscar("techfit.agua")
+        const dadosAtualizados = [...dadosExistentes || [] , ...novosDados]
+
+        if(dadosExistentes !== null){
+            modificar("techfit.agua",dadosAtualizados)
+            return
+        }
+
+        criar("techfit.agua",dadosAtualizados)
+    
+    }
+
+    function ApagaEmCache(id){
+        const dadosAtuais = buscar("techfit.agua")
+
+        if(dadosAtuais !== null){
+            modificar("techfit.agua",dadosAtuais.filter(item => item.id !== id))
+        }
+
+    }
 
     function Beber(){
+
         setaguaingerida(Number(aguaingerida) + Number(adicionar))
 
         const horaAtual = new Date().toLocaleTimeString("pt-BR", {
@@ -20,14 +65,18 @@ export default function Ingestao_de_Agua(){
             hour12: false
         });
 
-        setregistroAgua([...registroAgua, {
-            quantidade: adicionar,
+        const registro = {
+            quantidade: Number(adicionar),
             hora: horaAtual,
+            data: hoje,
             id: new Date().toISOString()
-        }])
+        }
+        const novoRegistro = [...registroAgua, registro]
+
+        setregistroAgua(novoRegistro)
+        RegistraEmCache([registro])
 
     }
-
 
     function tiraAgua(registro){
 
@@ -36,6 +85,7 @@ export default function Ingestao_de_Agua(){
         )
 
         setaguaingerida(Number(aguaingerida) - registro.quantidade)
+        ApagaEmCache(registro.id)
 
     }
 
@@ -52,7 +102,7 @@ export default function Ingestao_de_Agua(){
         </aside>
         <ul className="mx-2 my-5 p-2 h-50 overflow-auto">
             {registroAgua.reverse().map(reg => (
-                <li className="text-texto bg-conteiner2 rounded-lg border my-2 border-destaque/20 p-2 flex flex-row justify-between items-center" key={reg.hora}>
+                <li className="text-texto bg-conteiner2 rounded-lg border my-2 border-destaque/20 p-2 flex flex-row justify-between items-center" key={reg.id}>
                     <div className="flex flex-row items-center gap-5">
                         <MdWaterDrop className="size-7" />
                         <div className="flex flex-col items-center">
