@@ -7,30 +7,28 @@ import useCache from "../hooks/useCache";
 export default function Ingestao_de_Agua(){
 
     const metaingestao = 2800
-    const [aguaingerida,setaguaingerida] = useState(0)
+    const {criar,modificar,buscar} = useCache()
 
     const [adicionar,setadicionar] = useState(200)
-    const [registroAgua,setregistroAgua] = useState([])
-    const hoje = new Date().toLocaleDateString('pt-br')
+    const [registroAgua,setregistroAgua] = useState(() => buscar("techfit.agua") ?? [])
+    const [hoje,sethoje] = useState(() => new Date().toLocaleDateString("pt-BR"))
+    const registrosDoDia = registroAgua.filter(item => item.data === hoje)
+    const aguaingerida = registrosDoDia.reduce((soma,item) => soma + item.quantidade,0)
 
-    const {criar,modificar,buscar,excluir} = useCache()  
-    
     useEffect(() => {
+        const agora = new Date()
+        const proximaMeiaNoite = new Date(
+            agora.getFullYear(),
+            agora.getMonth(),
+            agora.getDate() + 1
+        )
+        const temporizador = setTimeout(
+            () => sethoje(new Date().toLocaleDateString("pt-BR")),
+            proximaMeiaNoite.getTime() - agora.getTime()
+        )
 
-        const dadosAtuais = buscar("techfit.agua")
-
-
-        if(dadosAtuais !== null){
-
-            setregistroAgua(dadosAtuais.filter(item => item.data === hoje))
-
-            const ingerido = dadosAtuais.reduce((soma,item) => soma + item.quantidade,0)
-
-            setaguaingerida(ingerido)
-
-        }
-
-    },[])
+        return () => clearTimeout(temporizador)
+    },[hoje])
 
 
     function RegistraEmCache(novosDados){
@@ -57,8 +55,6 @@ export default function Ingestao_de_Agua(){
 
     function Beber(){
 
-        setaguaingerida(Number(aguaingerida) + Number(adicionar))
-
         const horaAtual = new Date().toLocaleTimeString("pt-BR", {
             hour: "2-digit",
             minute: "2-digit",
@@ -80,11 +76,8 @@ export default function Ingestao_de_Agua(){
 
     function tiraAgua(registro){
 
-        setregistroAgua(
-            registroAgua.filter(item => item.id !== registro.id)
-        )
+        setregistroAgua(registros => registros.filter(item => item.id !== registro.id))
 
-        setaguaingerida(Number(aguaingerida) - registro.quantidade)
         ApagaEmCache(registro.id)
 
     }
@@ -101,7 +94,7 @@ export default function Ingestao_de_Agua(){
             <button onClick={Beber} type="button" className="text-texto cursor-pointer font-extrabold text-2xl bg-destaque w-11/12 p-3 rounded-2xl mt-5">Beber</button>
         </aside>
         <ul className="mx-2 my-5 p-2 h-50 overflow-auto">
-            {registroAgua.reverse().map(reg => (
+            {registrosDoDia.slice().reverse().map(reg => (
                 <li className="text-texto bg-conteiner2 rounded-lg border my-2 border-destaque/20 p-2 flex flex-row justify-between items-center" key={reg.id}>
                     <div className="flex flex-row items-center gap-5">
                         <MdWaterDrop className="size-7" />
