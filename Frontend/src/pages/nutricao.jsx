@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFireAlt } from "react-icons/fa";
 import { GrLinkPrevious } from "react-icons/gr";
 import Sidebar from "../components/sidebar";
+import { GetAllAliments } from "../APIs/GetAlimentos";
 
 export default function Nutricao(){
 
@@ -18,6 +19,18 @@ export default function Nutricao(){
     const [metaGordura,setmetaGordura] = useState(60)
 
     const [qtdRefeiçoes,setqtdRefeicoes] = useState(3)
+    const [alimentos,setAlimentos] = useState([])
+    const [buscaAlimento,setBuscaalimento] = useState("")
+
+
+    useEffect(() => {
+        async function requisitar(){
+            setAlimentos(await GetAllAliments())
+        }
+        requisitar()
+    },[])
+
+    console.log(alimentos)
 
     const macroNutrientes = [
         {
@@ -102,11 +115,40 @@ export default function Nutricao(){
                         <label className="text-texto/70 my-2"  htmlFor="refeiçao">nome refeição</label>
                         <input type="text" id="refeiçao" className="bg-conteiner2 mb-5 h-9 p-2 text-texto/80 rounded-lg" placeholder="Ex: Almoço..." />
                     </div>
-                    <button className="bg-destaque w-11/12 text-texto h-10 rounded-lg" type="button">Adicionar Alimento</button>
+                    <button onClick={() => setmodal("adicionarAlimento")} className="bg-destaque w-11/12 text-texto h-10 rounded-lg" type="button">Adicionar Alimento</button>
                 </aside>
                 <aside className="flex flex-col">
                     <span className="text-texto/70 mx-5 my-3">Alimentos:</span>
                     <ul></ul>
+                </aside>
+            </main>
+        )
+    }
+
+    if(modal === "adicionarAlimento"){
+        return(
+            <main className="flex flex-col min-h-screen bg-fundo">
+                <button onClick={() => setmodal("novaRefeiçao")} className="text-texto m-4 p-2 w-max rounded-full cursor-pointer shadow shadow-destaque" type="button"><GrLinkPrevious/></button>
+                <aside className="flex flex-col items-center">
+                    <div className="w-11/12 flex flex-col">
+                        <label className="text-texto/70 my-2"  htmlFor="refeiçao">Digite o nome do alimento</label>
+                        <input value={buscaAlimento} onChange={e => setBuscaalimento(e.target.value)} type="text" id="refeiçao" className="bg-conteiner2 mb-5 h-9 p-2 text-texto/80 rounded-lg" placeholder="Ex: Arroz..." />
+                    </div>
+                </aside>
+                <aside className="flex flex-col">
+                    <span className="text-texto/70 mx-5 my-3">Resultados:</span>
+                    <ul className="text-texto h-150 overflow-auto mx-4">
+                        {alimentos.foods
+                            .filter(item =>
+                                item.description.toLowerCase().includes(buscaAlimento.toLowerCase())
+                            )
+                            .map(item => (
+                                <li className="bg-conteiner2 border cursor-pointer border-destaque/20 my-3 p-4 rounded-2xl shadow-lg shadow-destaque/30"  key={item.id}>
+                                    {item.description.split(",").join(" ")}
+                                </li>
+                            ))
+                        }
+                    </ul>
                 </aside>
             </main>
         )
