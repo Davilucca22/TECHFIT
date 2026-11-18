@@ -14,4 +14,14 @@ export async function GetAllAliments(){
 
 export async function GetDetailsAliment(id){
 
+    const resp = await fetch(`https://brolesi.github.io/taco/foods/${id}.json`)
+
+    const data = await resp.json()
+
+    if(!resp.ok){
+        throw new Error("Erro ao buscar dados do alimento", data)
+    }
+
+    return data
+
 }

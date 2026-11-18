@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaFireAlt } from "react-icons/fa";
 import { GrLinkPrevious } from "react-icons/gr";
 import Sidebar from "../components/sidebar";
-import { GetAllAliments } from "../APIs/GetAlimentos";
+import { GetAllAliments, GetDetailsAliment } from "../APIs/GetAlimentos";
 
 export default function Nutricao(){
 
@@ -22,6 +22,18 @@ export default function Nutricao(){
     const [alimentos,setAlimentos] = useState([])
     const [buscaAlimento,setBuscaalimento] = useState("")
 
+    const resetRegistro = {
+        id:0 ,
+        descricao:"" ,
+        proteinas:0 ,
+        carboidratos:0 ,
+        lipidios:0 ,
+        gramas:0,
+        calorias:0
+    }
+
+    const [registroAlimento,setRegistroAlimento] = useState(resetRegistro)
+
 
     useEffect(() => {
         async function requisitar(){
@@ -30,7 +42,21 @@ export default function Nutricao(){
         requisitar()
     },[])
 
-    console.log(alimentos)
+    async function requisitaDetalhes(id){
+        const req = await GetDetailsAliment(id)
+
+        if(req){
+            setRegistroAlimento({
+                id: id,
+                descricao: req.description.split(",").join(" "),
+                proteinas: req.protein_g.toFixed(2),
+                carboidratos: req.carbohydrate_g.toFixed(2),
+                lipidios: req.lipids_g.toFixed(2),
+                calorias: req.energy_kcal.toFixed(2)
+            })
+        }
+
+    }
 
     const macroNutrientes = [
         {
@@ -143,12 +169,37 @@ export default function Nutricao(){
                                 item.description.toLowerCase().includes(buscaAlimento.toLowerCase())
                             )
                             .map(item => (
-                                <li className="bg-conteiner2 border cursor-pointer border-destaque/20 my-3 p-4 rounded-2xl shadow-lg shadow-destaque/30"  key={item.id}>
-                                    {item.description.split(",").join(" ")}
+                                <li onClick={() => {
+                                    setmodal("QtdAlimento")
+                                    requisitaDetalhes(item.id)
+                                }} className="flex flex-row justify-between bg-conteiner2 border cursor-pointer border-destaque/20 my-3 p-4 rounded-2xl shadow-lg shadow-destaque/30"  key={item.id}>
+                                    <span>{item.description.split(",").join(" ")}</span>
+                                    <span>100g</span>
                                 </li>
                             ))
-                        }
+                        } 
                     </ul>
+                </aside>
+            </main>
+        )
+    }
+
+    if(modal === "QtdAlimento"){ 
+        return(
+            <main className="bg-fundo min-h-screen">
+                <button onClick={() => setmodal("adicionarAlimento")} className="text-texto m-4 p-2 w-max rounded-full cursor-pointer shadow shadow-destaque" type="button"><GrLinkPrevious/></button>
+                <h1 className="text-texto text-2xl font-bold mx-4">{registroAlimento.descricao}</h1>
+                <ul className="m-4">
+                    <li className="text-red-600">P: {registroAlimento.proteinas}</li>
+                    <li className="text-green-600">C: {registroAlimento.carboidratos}</li>
+                    <li className="text-orange-600">G: {registroAlimento.lipidios}</li>
+                </ul>
+                <p className="text-texto mx-4">100g contém {registroAlimento.calorias} kcal</p>
+                <aside className="m-4">
+                    <label className="text-texto/80 text-sm" htmlFor="gramas">Quantidade consumida</label>
+                    <input value={registroAlimento.gramas} onChange={e => setRegistroAlimento({...registroAlimento, gramas: e.target.value})} type="number" id="gramas" className="bg-conteiner2 p-1 border border-destaque/20 rounded-md text-texto/50 w-full" />
+                    <button type="button" className="bg-destaque p-2 my-3 w-full rounded-lg text-texto font-bold">Registrar</button>
+                    <button onClick={() => setmodal("")} type="button" className="bg-destaque/50 p-2 w-full rounded-lg text-destaque font-bold">Cancelar</button>
                 </aside>
             </main>
         )
