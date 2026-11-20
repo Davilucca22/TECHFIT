@@ -20,10 +20,10 @@ export default function Nutricao(){
 
     const { criar, modificar, buscar, excluir } = useCache()
     const objetivoDiario = {
-        calorias_diarias: 2500,
-        proteinas: 150,
-        carboidratos: 215,
-        lipidios: 60
+        calorias_diarias: 2700,
+        proteinas: 190,
+        carboidratos: 305,
+        lipidios: 80
     }
 
     const [listaDeAlimentos,setlistaDeAlimentos] = useState([])
@@ -258,8 +258,8 @@ export default function Nutricao(){
                             <li key={item.nome} className="text-texto/70 flex flex-col bg-conteiner1 border border-destaque/30 p-3 rounded-2xl w-2/3 shadow-md shadow-destaque/20">
                                 <span className="text-sm font-medium">{item.nome}</span>
                                 <p>
-                                    <span className="text-texto font-bold text-lg">{casasDecimais(item.consumido)}</span>
-                                    <span className="text-sm font-medium">/ {item.meta} g</span>
+                                    <span className="text-texto text-md font-bold">{casasDecimais(item.consumido)}</span>
+                                    <span className="text-sm">/ {item.meta}</span>
                                 </p>
                                 <div className="w-full bg-gray-800 rounded-full">
                                     <div style={{ width: `${Math.min((item.consumido / item.meta) * 100, 100)}%` }} className={`h-2 ${item.nome === "Proteina" ? "bg-red-700" : item.nome === "Carboidrato" ? "bg-green-700" : "bg-orange-600"} rounded-full transition-all`}></div>
@@ -284,8 +284,10 @@ export default function Nutricao(){
                                         <span>{refeicao.nome}</span>
                                         <span>{casasDecimais(refeicao.calorias)} kcal</span>
                                     </div>
-                                    <p className="text-texto/70 text-sm">
-                                        P: {casasDecimais(refeicao.proteinas)}g · C: {casasDecimais(refeicao.carboidratos)}g · G: {casasDecimais(refeicao.lipidios)}g
+                                    <p className=" text-sm">
+                                        <span className="text-red-500">P: {casasDecimais(refeicao.proteinas)}g </span>  
+                                        <span className="text-green-500">C: {casasDecimais(refeicao.carboidratos)}g </span>  
+                                        <span className="text-orange-500">G: {casasDecimais(refeicao.lipidios)}g</span>
                                     </p>
                                     <p className="text-texto/60 text-xs mt-1">
                                         {refeicao.alimentos.map(alimento => alimento.descricao).join(", ")}
