@@ -6,6 +6,14 @@ import { GetAllAliments, GetDetailsAliment } from "../APIs/GetAlimentos";
 
 export default function Nutricao(){
 
+    const objetivoDiario = {
+        calorias_diarias: 2500,
+        proteinas: 150,
+        carboidratos: 215,
+        lipidios: 60
+    }
+
+    const [listaDeAlimentos,setlistaDeAlimentos] = useState([])
     const [modal,setmodal] = useState("")
 
     const [calConsumidas,setcalConsumidas] = useState(1000)
@@ -13,27 +21,29 @@ export default function Nutricao(){
     const [carboConsumida,setcarboConsumida] = useState(215)
     const [gordConsumida,setgordConsumida] = useState(60)
 
-    const [meta,setmeta] = useState(2500)
-    const [metaProteina,setmetaProteina] = useState(150)
-    const [metaCarboidrato,setmetaCarboidrato] = useState(215)
-    const [metaGordura,setmetaGordura] = useState(60)
-
     const [qtdRefeiçoes,setqtdRefeicoes] = useState(3)
     const [alimentos,setAlimentos] = useState([])
     const [buscaAlimento,setBuscaalimento] = useState("")
 
     const resetRegistro = {
+        id: 0,
+        descricao: "",
+        proteinas: 0,
+        carboidratos: 0,
+        lipidios: 0,
+        calorias: 0,
+        gramas_consumidas:null
+    }
+
+    const [registroAlimento,setRegistroAlimento] = useState(resetRegistro)
+    const [infoNutricional,setinfoNutricional] = useState({
         id:0 ,
         descricao:"" ,
         proteinas:0 ,
         carboidratos:0 ,
         lipidios:0 ,
-        gramas:0,
         calorias:0
-    }
-
-    const [registroAlimento,setRegistroAlimento] = useState(resetRegistro)
-
+    })
 
     useEffect(() => {
         async function requisitar(){
@@ -43,37 +53,42 @@ export default function Nutricao(){
     },[])
 
     async function requisitaDetalhes(id){
+
         const req = await GetDetailsAliment(id)
 
         if(req){
-            setRegistroAlimento({
+            setinfoNutricional({
                 id: id,
                 descricao: req.description.split(",").join(" "),
-                proteinas: req.protein_g.toFixed(2),
-                carboidratos: req.carbohydrate_g.toFixed(2),
-                lipidios: req.lipids_g.toFixed(2),
-                calorias: req.energy_kcal.toFixed(2)
+                proteinas: req.protein_g / 100,
+                carboidratos: req.carbohydrate_g / 100,
+                lipidios: req.lipids_g / 100,
+                calorias: req.energy_kcal / 100
             })
         }
 
     }
 
+    function casasDecimais(numero){
+        return numero.toFixed(2)
+    }
+
     const macroNutrientes = [
         {
             nome: "Proteina",
-            meta: metaProteina,
+            meta: objetivoDiario.proteinas,
             consumido: protConsumida,
             progresso: 77
         },
         {
             nome: "Carboidrato",
-            meta: metaCarboidrato,
+            meta: objetivoDiario.carboidratos,
             consumido: carboConsumida,
             progresso:70
         },
         {
             nome: "Gordura",
-            meta: metaGordura,
+            meta: objetivoDiario.lipidios,
             consumido: gordConsumida,
             progresso:90
         },
@@ -93,8 +108,8 @@ export default function Nutricao(){
                     <div>
                         <p className="text-texto/70 text-sm">Calorias consumidas</p>
                         <p><span className="text-texto font-bold text-2xl">{calConsumidas}</span><span className="text-texto/70 text-sm"> kcal</span></p>
-                        <p className="text-texto/70 text-sm">meta {meta}</p>
-                        <p className="text-destaque text-sm">{meta - calConsumidas} kcal restantes</p>
+                        <p className="text-texto/70 text-sm">meta {objetivoDiario.calorias_diarias}</p>
+                        <p className="text-destaque text-sm">{objetivoDiario.calorias_diarias - calConsumidas} kcal restantes</p>
                     </div>
                 </aside>
                 <aside>
@@ -145,8 +160,51 @@ export default function Nutricao(){
                 </aside>
                 <aside className="flex flex-col">
                     <span className="text-texto/70 mx-5 my-3">Alimentos:</span>
-                    <ul></ul>
+                    <ul className="text-texto h-85 overflow-auto">
+                        {listaDeAlimentos.map(alim => (
+                            <li className="m-4 bg-conteiner2 p-3 rounded-2xl border border-destaque/30 shadow-lg shadow-destaque/30">
+                                <p className="flex flex-row justify-between text-lg font-medium">
+                                    <span>{alim.descricao}</span>
+                                    <span>{alim.gramas_consumidas}g</span>
+                                </p>
+                                <p className="flex flex-row justify-between text-sm font-light">
+                                    <div className="flex gap-3">  
+                                        <span className="text-red-700">P:{alim.proteinas.toFixed(2)}g</span>
+                                        <span className="text-green-700">C:{alim.carboidratos.toFixed(2)}g</span>
+                                        <span className="text-orange-700">G:{alim.lipidios.toFixed(2)}g</span>
+                                    </div>
+                                    <span>{alim.calorias.toFixed(2)}kcal</span>
+                                </p>
+                            </li>
+                        ))}
+                    </ul>
                 </aside>
+                <footer className="fixed block w-full bottom-0 m-4">
+                <aside className="w-11/12 mb-3">
+                    <h2 className="text-texto font-bold text-lg">Informaçoes de consumo:</h2>
+                    <ul className="bg-conteiner2 p-4 mt-2 rounded-2xl border border-destaque/30 shadow-lg shadow-destaque/50">
+                        <li className="flex flex-row justify-between text-red-500">
+                            <span>Proteinas: </span>
+                            <span>{casasDecimais(listaDeAlimentos.reduce((ac,obj) => { return ac + obj.proteinas},0))}g</span>
+                        </li>
+                        <li className="flex flex-row justify-between text-green-500">
+                            <span>Carboidratos: </span>
+                            <span>{casasDecimais(listaDeAlimentos.reduce((ac,obj) => { return ac + obj.carboidratos},0))}g</span>
+                        </li>
+                        <li className="flex flex-row justify-between text-orange-500">
+                            <span>Gorduras: </span>
+                            <span>{casasDecimais(listaDeAlimentos.reduce((ac,obj) => { return ac + obj.lipidios},0))}g</span>
+                        </li>
+                        <li className="flex flex-row justify-between text-texto">
+                            <span>Calorias: </span>
+                            <span>{casasDecimais(listaDeAlimentos.reduce((ac,obj) => { return ac + obj.calorias},0))}kcal</span>
+                        </li>
+
+                    </ul>
+                </aside>
+
+                    <button className="bg-destaque p-3 rounded-2xl shadow-lg shadow-destaque/30 text-texto font-bold w-11/12">Registrar</button>
+                </footer>
             </main>
         )
     }
@@ -166,14 +224,14 @@ export default function Nutricao(){
                     <ul className="text-texto h-150 overflow-auto mx-4">
                         {alimentos.foods
                             .filter(item =>
-                                item.description.toLowerCase().includes(buscaAlimento.toLowerCase())
+                                item.description.split(",").join("").toLowerCase().includes(buscaAlimento.toLowerCase())
                             )
                             .map(item => (
                                 <li onClick={() => {
                                     setmodal("QtdAlimento")
                                     requisitaDetalhes(item.id)
                                 }} className="flex flex-row justify-between bg-conteiner2 border cursor-pointer border-destaque/20 my-3 p-4 rounded-2xl shadow-lg shadow-destaque/30"  key={item.id}>
-                                    <span>{item.description.split(",").join(" ")}</span>
+                                    <span>{item.description.split(",").join("")}</span>
                                     <span>100g</span>
                                 </li>
                             ))
@@ -188,21 +246,56 @@ export default function Nutricao(){
         return(
             <main className="bg-fundo min-h-screen">
                 <button onClick={() => setmodal("adicionarAlimento")} className="text-texto m-4 p-2 w-max rounded-full cursor-pointer shadow shadow-destaque" type="button"><GrLinkPrevious/></button>
-                <h1 className="text-texto text-2xl font-bold mx-4">{registroAlimento.descricao}</h1>
+                <h1 className="text-texto text-2xl font-bold mx-4">{infoNutricional.descricao}</h1>
                 <ul className="m-4">
-                    <li className="text-red-600">P: {registroAlimento.proteinas}</li>
-                    <li className="text-green-600">C: {registroAlimento.carboidratos}</li>
-                    <li className="text-orange-600">G: {registroAlimento.lipidios}</li>
+                    <li className="text-red-600">P: {(infoNutricional.proteinas * 100).toFixed(2)}</li>
+                    <li className="text-green-600">C: {(infoNutricional.carboidratos * 100).toFixed(2)}</li>
+                    <li className="text-orange-600">G: {(infoNutricional.lipidios * 100).toFixed(2)}</li>
                 </ul>
-                <p className="text-texto mx-4">100g contém {registroAlimento.calorias} kcal</p>
-                <aside className="m-4">
+                <p className="text-texto mx-4">100g contém {(infoNutricional.calorias * 100).toFixed(2)} kcal</p>
+                <aside className="mx-4 mt-5">
+                    <h2 className="text-texto font-bold text-lg">Informaçoes de consumo:</h2>
+                    <ul className="bg-conteiner2 p-4 mt-2 rounded-2xl border border-destaque/30 shadow-lg shadow-destaque/50">
+                        <li className="flex flex-row justify-between text-red-500">
+                            <span>Proteinas: </span>
+                            <span>{registroAlimento.proteinas.toFixed(2)}g</span>
+                        </li>
+                        <li className="flex flex-row justify-between text-green-500">
+                            <span>Carboidratos: </span>
+                            <span>{registroAlimento.carboidratos.toFixed(2)}g</span>
+                        </li>
+                        <li className="flex flex-row justify-between text-orange-500">
+                            <span>Gorduras: </span>
+                            <span>{registroAlimento.lipidios.toFixed(2)}g</span>
+                        </li>
+                        <li className="flex flex-row justify-between text-texto">
+                            <span>Calorias: </span>
+                            <span>{registroAlimento.calorias.toFixed(2)}kcal</span>
+                        </li>
+
+                    </ul>
+                </aside>
+                <aside className="m-4 fixed bottom-0">
                     <label className="text-texto/80 text-sm" htmlFor="gramas">Quantidade consumida</label>
-                    <input value={registroAlimento.gramas} onChange={e => setRegistroAlimento({...registroAlimento, gramas: e.target.value})} type="number" id="gramas" className="bg-conteiner2 p-1 border border-destaque/20 rounded-md text-texto/50 w-full" />
-                    <button type="button" className="bg-destaque p-2 my-3 w-full rounded-lg text-texto font-bold">Registrar</button>
+                    <input value={registroAlimento.gramas_consumidas} onChange={e => {
+                        setRegistroAlimento({
+                            id: infoNutricional.id,
+                            descricao: infoNutricional.descricao,
+                            gramas_consumidas: Number(e.target.value),
+                            calorias: Number(e.target.value) * infoNutricional.calorias,
+                            proteinas: Number(e.target.value) * infoNutricional.proteinas,
+                            carboidratos: Number(e.target.value) * infoNutricional.carboidratos,
+                            lipidios: Number(e.target.value) * infoNutricional.lipidios,
+                        })}
+                    } type="number" id="gramas" className="bg-conteiner2 p-1 border border-destaque/20 rounded-md text-texto/50 w-full" />
+                    <button onClick={() => {
+                        setlistaDeAlimentos([...listaDeAlimentos,registroAlimento])
+                        setRegistroAlimento(resetRegistro)
+                        setmodal("novaRefeiçao")
+                    }} type="button" className="bg-destaque p-2 my-3 w-full rounded-lg text-texto font-bold">Registrar</button>
                     <button onClick={() => setmodal("")} type="button" className="bg-destaque/50 p-2 w-full rounded-lg text-destaque font-bold">Cancelar</button>
                 </aside>
             </main>
         )
     }
-
 }
